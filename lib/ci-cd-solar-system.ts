@@ -1,10 +1,12 @@
 import { Stack } from '@aws-cdk/core';
 import { SolarSystemExtensionStack, SolarSystemExtensionStackProps, CiCdFeatureExtensionStack } from '@cdk-cosmos/core';
 import { AppGalaxyStack } from '.';
+//import { StandardPipeline } from '@cosmos-building-blocks/pipeline';
 
 export class AppCiCdSolarSystemStack extends SolarSystemExtensionStack {
   readonly galaxy: AppGalaxyStack;
   readonly ciCd: CiCdFeatureExtensionStack;
+  //readonly codePipeline: StandardPipeline;
 
   constructor(galaxy: AppGalaxyStack, props?: SolarSystemExtensionStackProps) {
     super(galaxy, 'CiCd', {
@@ -28,7 +30,13 @@ export class AppCiCdSolarSystemStack extends SolarSystemExtensionStack {
      * link.com/pipelines
      */
 
-
+    //  //if using std pipeline, you'll need a makefile in your app code
+    // this.codePipeline = new StandardPipeline(this, 'CodePipeline', {
+    //   pipelineName: this.galaxy.cosmos.nodeId('Code-Pipeline', '-'),
+    //   buildName: this.galaxy.cosmos.nodeId('Code-Build', '-'),
+    //   codeSource: sourceProvider,//this is the code repo defined in cosmos.ts or github enterprise
+    //   buildSpec: StandardPipeline.DefaultBuildSpec(),//std pipeline comes with default buildspec. can define custom one if needed
+    // });
 
   }
 
