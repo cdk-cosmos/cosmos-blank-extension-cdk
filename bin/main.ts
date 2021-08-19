@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import { App } from '@aws-cdk/core';
-import { AccountPrincipal } from '@aws-cdk/aws-iam';
 import { AppCosmosStack, AppGalaxyStack, AppSolarSystemStack, AppCiCdSolarSystemStack } from '../lib';
 
 // Cdk App
@@ -26,26 +25,23 @@ const ciCd = new AppCiCdSolarSystemStack(mgtGalaxy);
 const devGalaxy = new AppGalaxyStack(cosmos, 'Dev', {
   env: devEnvConfig,
 });
-// Allow the Dev Galaxy to access the ecr repo
-cosmos.ecrRepo.grantPull(new AccountPrincipal(devGalaxy.account));
 
-// Extend the Dev SolarSystem, by creating service
-const dev = new AppSolarSystemStack(devGalaxy, 'Dev', {
-  appVersion: process.env.APP_BUILD_VERSION,
-});
-// Add a Deployment stage in App Pipeline to target this SolarSystem
-ciCd.addCdkDeployEnvStageToCodePipeline({
-  name: 'DeployDev',
-  stacks: [dev],
-  isManualApprovalRequired: false,
-});
+/**
+ * The solar systems below this section must be commented out when the bootstrapper runs initially, as the resources they need have not been created. 
+ * Uncomment when pushing code to the newly created cdk repo and re-run the pipeline to create these solar systems
+ * 
+ * This may be resolved in future versions of Cosmos with the new cdk pipeline
+ */
 
-// Extend the Dev SolarSystem, by creating service
-const tst = new AppSolarSystemStack(devGalaxy, 'Tst', {
-  appVersion: process.env.APP_BUILD_VERSION,
-});
-// Add a Deployment stage in App Pipeline to target this SolarSystem
-ciCd.addCdkDeployEnvStageToCodePipeline({
-  name: 'DeployTst',
-  stacks: [tst],
-});
+// // Extend the Dev SolarSystem, by creating service
+// const dev = new AppSolarSystemStack(devGalaxy, 'Dev', {
+//   //pass whatever AppSolarSystemProps is expecting in solar-system.ts
+// });
+
+// // Optionally, add a Deployment stage in App Pipeline to target this SolarSystem. Otherwise all will be deployed in final stage of pipeline
+// ciCd.addCdkDeployEnvStageToCodePipeline({
+//   name: 'DeployDev',
+//   stacks: [dev],
+//   isManualApprovalRequired: false,
+// });
+

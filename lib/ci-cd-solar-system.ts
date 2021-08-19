@@ -1,12 +1,10 @@
 import { Stack } from '@aws-cdk/core';
 import { SolarSystemExtensionStack, SolarSystemExtensionStackProps, CiCdFeatureExtensionStack } from '@cdk-cosmos/core';
-import { DockerPipeline } from '@cosmos-building-blocks/pipeline';
 import { AppGalaxyStack } from '.';
 
 export class AppCiCdSolarSystemStack extends SolarSystemExtensionStack {
   readonly galaxy: AppGalaxyStack;
   readonly ciCd: CiCdFeatureExtensionStack;
-  readonly codePipeline: DockerPipeline;
 
   constructor(galaxy: AppGalaxyStack, props?: SolarSystemExtensionStackProps) {
     super(galaxy, 'CiCd', {
@@ -18,30 +16,37 @@ export class AppCiCdSolarSystemStack extends SolarSystemExtensionStack {
       ...props
     });
 
+    //This creates all the resources of the CiCd feature extension stack and gives you a way to reference them (through the this.ciCd field)
     this.addCiCd();
 
-    const { codeRepo, ecrRepo } = this.galaxy.cosmos;
+    //can add codeRepo, ecrRepo here
+    // const { codeRepo, ecrRepo } = this.galaxy.cosmos;
+    
+    /**
+     * Choose between docker, node or standard pipeline
+     * Place pipeline code below, import at the top of the file and add `readonly codePipeline: StandardPipeline;` to exports, before the constructor
+     * link.com/pipelines
+     */
 
-    this.codePipeline = new DockerPipeline(this, 'CodePipeline', {
-      pipelineName: this.galaxy.cosmos.nodeId('Code-Pipeline', '-'),
-      buildName: this.galaxy.cosmos.nodeId('Code-Build', '-'),
-      codeRepo: codeRepo,
-      buildSpec: DockerPipeline.DefaultBuildSpec(),
-      buildEnvs: {
-        ECR_URL: {
-          value: ecrRepo.repositoryUri,
-        },
-      },
-    });
 
-    ecrRepo.grantPullPush(this.codePipeline.build);
+
   }
 
-  addCdkDeployEnvStageToCodePipeline(props: { name: string; stacks: Stack[]; isManualApprovalRequired?: boolean }) {
+//defined here so you can add stages to cdk pipeline from bin/main.ts
+  addCdkDeployEnvStageToCdkPipeline(props: { name: string; stacks: Stack[]; isManualApprovalRequired?: boolean }) {
     this.ciCd.addDeployStackStage({
       ...props,
-      pipeline: this.codePipeline.pipeline,
-      envs: DockerPipeline.DefaultAppBuildVersionStageEnv(),
+      pipeline: this.ciCd.cdkPipeline.pipeline,
     });
   }
+
+//defined here so you can add stages to code pipeline from bin/main.ts. 
+//Uncomment once pipeline type has been selected and imported. Update envs to reflect correct pipeline
+  // addCdkDeployEnvStageToCodePipeline(props: { name: string; stacks: Stack[]; isManualApprovalRequired?: boolean }) {
+  //   this.ciCd.addDeployStackStage({
+  //     ...props,
+  //     pipeline: this.codePipeline.pipeline,
+  //     envs: StandardPipeline.DefaultAppBuildVersionStageEnv(),//passes app build version, check pipeline type matches imports
+  //   });
+  // }
 }
