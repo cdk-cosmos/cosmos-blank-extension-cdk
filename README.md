@@ -1,7 +1,8 @@
-# Extension Template
+# Blank Extension Template
 
-This template is the boilerplate code for a Cosmos Extension.
+This template is the boilerplate code for a Cosmos Extension. It is a blank template and assumes you will be building out your code. For a detailed walkthrough of editing this template, please visit the [Cosmos Docs](https://cdk-cosmos.github.io/law/guides/). Alternatively, for a pre-filled ECS flavoured template, please use [cosmos-extension-cdk](https://github.com/cdk-cosmos/cosmos-extension-cdk) template instead.
 
+## What is an extension?
 A Cosmos Extension is a CDK project that consumes shared resources made available through the Cosmos Core. It extends those resources with further resources required for one application. Cosmos is designed so a single Core provides shared resources for many Extensions.
 
 An extension consumes and extends Core resources through Cosmos constructs provided in this template. Those are:
@@ -29,7 +30,7 @@ export class AppSolarSystemStack extends SolarSystemExtensionStack {
     // ...
 ```
 
-> Note: The template comes with helper code to create a typical ECS service. This may be removed or customised. 
+
 
 In [main.ts](bin/main.ts). instantiate the `AppSolarSystemStack` once for each Solar System in the Core that you want to deploy your application's resources to:
 
